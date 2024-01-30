@@ -12,13 +12,13 @@ async def handle_location(callback_query: types.CallbackQuery, state: FSMContext
     async with state.proxy() as data:
         data["choosing_location"] = location
 
-    await UserState.next()
+    await UserState.checklist.set()
 
     await bot.edit_message_text(
         f"Ви обрали локацію: {location}\nПункт 1",
         chat_id=callback_query.from_user.id,
         message_id=callback_query.message.message_id,
-        reply_markup=create_checklist_keyboard(1),
+        reply_markup=create_checklist_keyboard(),
     )
 
 
