@@ -15,4 +15,4 @@ def create_checklist_keyboard() -> types.InlineKeyboardMarkup:
     return keyboard
 
 
-buttons = [("👌 Все чисто", "clean"), ("💬 Залишити коментар", "comment")]
+buttons = (("👌 Все чисто", "clean"), ("💬 Залишити коментар", "comment"))

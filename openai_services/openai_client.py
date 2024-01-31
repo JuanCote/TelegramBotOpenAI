@@ -5,7 +5,7 @@ from aiogram.dispatcher.storage import FSMContextProxy
 
 load_dotenv()
 
-# Create OpenAI object
+# Create async OpenAI object
 client = AsyncOpenAI()
 
 

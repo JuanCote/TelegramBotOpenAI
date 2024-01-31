@@ -1,9 +1,11 @@
+import asyncio
 import os
+import time
 from aiogram import Bot, Dispatcher, types
 from aiogram.dispatcher import FSMContext
 import aiohttp
 from helpers.photo_saver import download_photo, load_data
-from helpers.reply_via_editing import reply_with_report_via_editing
+from helpers.reply_via_editing import reply_with_report_via_editing, update_interface
 from keyboards.back_to_menu import create_back_to_menu
 from keyboards.checklist_keyboard import create_checklist_keyboard
 from openai_services.openai_client import send_report_to_ai
@@ -27,11 +29,20 @@ async def handle_image(message: types.Message, state: FSMContext):
         data[f"checklist_{checklist_order}"]["file_path"] = file_path
     # Check for question order. If more than 5 then the checklist is over
     if checklist_order >= 5:
-        await message.answer(
+        waiting_message = await message.answer(
             text="😊 Дякую за заповнення чек-листа\n🔄 Відповідь від OpenAI буде незабаром",
         )
         # Receive a response from OpenAI
-        openai_response = await send_report_to_ai(data)
+        openai_task = asyncio.create_task(send_report_to_ai(data))
+        asyncio.create_task(
+            update_interface(
+                bot=message.bot,
+                chat_id=message.from_user.id,
+                message_id=waiting_message.message_id,
+                openai_task=openai_task,
+            )
+        )
+        openai_response = await openai_task
         await message.answer(
             text=f"Відповідь OpenAI:\n{openai_response}",
             reply_markup=create_back_to_menu(),

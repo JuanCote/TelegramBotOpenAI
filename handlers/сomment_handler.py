@@ -1,6 +1,9 @@
 from aiogram import Bot, Dispatcher, types
 from aiogram.dispatcher import FSMContext
 from helpers.photo_saver import load_data
+from helpers.reply_via_editing import reply_with_report_via_editing
+from keyboards.checklist_keyboard import create_checklist_keyboard
+from keyboards.refuse_from_image import create_refuse_image_keyboard
 from keyboards.reuse_image_keyboard import create_reuse_image_keyboard
 
 from state import UserState
@@ -34,6 +37,31 @@ async def handle_comment(message: types.Message, state: FSMContext):
     except KeyError:
         await message.answer(
             f"📂 Коментар збережно\nТепер надішліть фото",
+            reply_markup=create_refuse_image_keyboard(),
+        )
+
+
+async def handle_refusal_to_load_image(
+    callback_query: types.CallbackQuery, state: FSMContext
+):
+    """
+    Handles the user's refucal from load image.
+    """
+    bot = callback_query.bot
+    async with state.proxy() as data:
+        checklist_order = len(data)
+        data[f"checklist_{checklist_order - 1}"]["file_path"] = None
+    if checklist_order <= 5:
+        await UserState.checklist.set()
+        await bot.edit_message_text(
+            text=f"🧐 Запитання {checklist_order}",
+            chat_id=callback_query.from_user.id,
+            message_id=callback_query.message.message_id,
+            reply_markup=create_checklist_keyboard(),
+        )
+    else:
+        await reply_with_report_via_editing(
+            bot=bot, callback_query=callback_query, data=data
         )
 
 
@@ -41,4 +69,9 @@ def setup(dp: Dispatcher):
     dp.register_message_handler(
         handle_comment,
         state=UserState.comment,
+    )
+    dp.register_callback_query_handler(
+        handle_refusal_to_load_image,
+        lambda c: c.data == "refuse_load_image",
+        state=UserState.image,
     )
