@@ -1,5 +1,7 @@
 # TelegramBotOpenAI
 
+https://github.com/JuanCote/TelegramBotOpenAI/assets/91831744/0d0e9667-ea70-49d4-9c88-f2875f933cf3
+
 A simple telegram bot that implements a simple checklist and communicates with OpenAI.
 
 ## Getting Started
