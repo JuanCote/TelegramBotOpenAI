@@ -2,6 +2,9 @@ from aiogram import types
 
 
 def create_locations_keyboard():
+    """
+    Creates a keyboard with locations.
+    """
     keyboard = types.InlineKeyboardMarkup(resize_keyboard=True)
     for location in locations:
         keyboard.add(

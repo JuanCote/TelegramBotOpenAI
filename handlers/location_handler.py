@@ -6,16 +6,20 @@ from state import UserState
 
 
 async def handle_location(callback_query: types.CallbackQuery, state: FSMContext):
+    """
+    Handles user selection of a location from the callback query.
+    """
     location = callback_query.data.split("_")[1]
     bot = callback_query.bot
 
+    # Saving the selected location
     async with state.proxy() as data:
         data["choosing_location"] = location
 
     await UserState.checklist.set()
 
     await bot.edit_message_text(
-        f"Ви обрали локацію: {location}\nПункт 1",
+        f"👍 Ви обрали локацію: {location}\n📋 Тепер пройдіть чек-лист з п'яти запитань!\n🧐 Запитання 1",
         chat_id=callback_query.from_user.id,
         message_id=callback_query.message.message_id,
         reply_markup=create_checklist_keyboard(),

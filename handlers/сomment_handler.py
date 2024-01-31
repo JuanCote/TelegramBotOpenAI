@@ -7,6 +7,10 @@ from state import UserState
 
 
 async def handle_comment(message: types.Message, state: FSMContext):
+    """
+    Handles the user's comment message during checklist completion.
+    """
+    # Saving user's comment in state
     async with state.proxy() as data:
         location = data["choosing_location"].split(" ")[-1]
         checklist_order = len(data)
@@ -15,20 +19,21 @@ async def handle_comment(message: types.Message, state: FSMContext):
     json_data = await load_data()
     user_id = str(message.from_user.id)
     await UserState.image.set()
+    # Trying to get a photo added earlier to this question of this location
     try:
         image_url = json_data[user_id][location][str(checklist_order)]
         try:
             with open(image_url, "rb") as photo:
                 await message.bot.send_photo(message.chat.id, photo)
             await message.answer(
-                f"Коментар збережно\nВи вже раніше завантажували фото до цього пункту цієї локації\nЧи бажаєте ви його використати\nЯкщо ні - завантажте нове фото",
+                f"📂 Коментар збережно\nВи вже раніше завантажували фото до цього пункту цієї локації\nЧи бажаєте ви його використати\nЯкщо ні - завантажте нове фото",
                 reply_markup=create_reuse_image_keyboard(),
             )
         except FileNotFoundError:
             raise KeyError
     except KeyError:
         await message.answer(
-            f"Коментар збережно\nТепер надішліть фото",
+            f"📂 Коментар збережно\nТепер надішліть фото",
         )
 
 

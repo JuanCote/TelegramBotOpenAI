@@ -10,6 +10,10 @@ PHOTOS_DIR = "images"
 async def download_photo(
     message: types.Message, location: int, checklist_order: int
 ) -> str:
+    """
+    Downloads and saves the photo sent by the user.
+    """
+    # Uploading photos to the server
     try:
         photo = message.photo[-1]
         os.makedirs(PHOTOS_DIR, exist_ok=True)
@@ -34,6 +38,9 @@ async def download_photo(
 async def save_photo_url(
     file_path: str, user_id: str, location: str, checklist_order: str
 ):
+    """
+    Saves a link to a photo in a json file.
+    """
     data = await load_data()
     if user_id not in data:
         data[user_id] = {}
@@ -44,6 +51,9 @@ async def save_photo_url(
 
 
 async def load_data() -> dict:
+    """
+    Returns json file as a dictionary.
+    """
     try:
         with open("data.json", "r") as file:
             data = json.load(file)
@@ -57,5 +67,8 @@ async def load_data() -> dict:
 
 
 async def save_data(data: dict):
+    """
+    Saves the dictionary to a json file.
+    """
     with open("data.json", "w") as file:
         json.dump(data, file, indent=4)

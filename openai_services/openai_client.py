@@ -5,12 +5,16 @@ from aiogram.dispatcher.storage import FSMContextProxy
 
 load_dotenv()
 
+# Create OpenAI object
 client = OpenAI()
 
 
 async def send_report_to_ai(
     data: FSMContextProxy, recursed: bool = False
 ) -> types.chat.chat_completion_message.ChatCompletionMessage:
+    """
+    Sends a report to the OpenAI API and returns a response.
+    """
     report = create_report_from_json_data(data)
     try:
         completion = client.chat.completions.create(
@@ -38,6 +42,9 @@ async def send_report_to_ai(
 
 
 def create_report_from_json_data(data: FSMContextProxy) -> str:
+    """
+    Generates a report for sending to OpenAI using the collected data from the state object.
+    """
     try:
         report = data["choosing_location"]
         for i in range(1, 6):
