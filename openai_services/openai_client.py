@@ -1,12 +1,12 @@
 from dotenv import load_dotenv
-from openai import APIError, OpenAI, types
+from openai import APIError, types, AsyncOpenAI
 from aiogram.dispatcher.storage import FSMContextProxy
 
 
 load_dotenv()
 
 # Create OpenAI object
-client = OpenAI()
+client = AsyncOpenAI()
 
 
 async def send_report_to_ai(
@@ -17,7 +17,7 @@ async def send_report_to_ai(
     """
     report = create_report_from_json_data(data)
     try:
-        completion = client.chat.completions.create(
+        completion = await client.chat.completions.create(
             model="gpt-3.5-turbo",
             messages=[
                 {
